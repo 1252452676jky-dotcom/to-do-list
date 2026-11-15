@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work Tasks</title>
+
+  <style>
+    /* ============================================================
+       1. DESIGN TOKENS
+       "Custom properties" — variables defined once, reused everywhere.
+       Change a value here and the whole theme updates.
+       ============================================================ */
+    :root {
+      --bg: #f4f6f9;            /* page background */
+      --surface: #ffffff;       /* card background */
+      --border: #e2e8f0;        /* hairline borders */
+      --text: #1e293b;          /* main text */
+      --text-muted: #64748b;    /* secondary text */
+      --accent: #2f55d4;        /* primary buttons / focus */
+      --accent-hover: #24439f;
+      --accent-soft: #eef2ff;   /* light accent tint */
+      --danger: #b91c1c;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.06);
+    }
+
+    /* ============================================================
+       2. RESET & BASE
+       Small reset so browsers don't add their own defaults.
+       ============================================================ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+    }
+
+    /* ============================================================
+       3. LAYOUT — one centered card
+       ============================================================ */
+    .app {
+      max-width: 560px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+    }
+
+    .app-header { margin-bottom: 1.5rem; }
+
+    .app-header h1 {
+      font-size: 1.375rem;      /* ~22px */
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .app-header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    /* ============================================================
+       4. THE ADD-TASK FORM
+       A real <form> means Enter key submits for free.
+       ============================================================ */
+    .add-form {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .add-form input {
+      flex: 1;                  /* input grows, button keeps its size */
+      padding: 0.625rem 0.875rem;
+      font-size: 0.9375rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+    }
+
+    .add-form input::placeholder { color: #94a3b8; }
+
+    .add-form button {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .add-form button:hover { background: var(--accent-hover); }
+
+    /* --- Accessibility: a thick, visible focus ring for keyboard users --- */
+    input:focus-visible,
+    button:focus-visible,
+    a:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* ============================================================
+       5. THE TASK LIST
+       Each row: checkbox | title | priority badge | delete button
+       ============================================================ */
+    .task-list { list-style: none; }
+
+    .task-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .task-list li:last-child { border-bottom: none; }
+
+    .task-list input[type="checkbox"] {
+      width: 1.125rem;
+      height: 1.125rem;
+      accent-color: var(--accent);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .task-title {
+      flex: 1;
+      font-size: 0.9375rem;
+      word-break: break-word;
+    }
+
+    /* Completed tasks get muted text + strikethrough */
+    .task-title.done {
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    /* Priority badge — a colored pill. The li gets a class like
+       "priority-high" and this rule colors the badge accordingly. */
+    .badge {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .badge-low {
+      background: #f1f5f9;
+      color: var(--text-muted);
+    }
+
+    .badge-high {
+      background: #fde8e8;
+      color: var(--danger);
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.125rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .delete-btn:hover { color: var(--danger); }
+
+    /* Shown when the list is empty */
+    .empty-state {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-align: center;
+      padding: 1.5rem 0;
+    }
+
+    /* A tiny status line under the list */
+    .status-bar {
+      margin-top: 1rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <main class="app">
+    <header class="app-header">
+      <h1>Work Tasks</h1>
+      <p>Track today's tasks. Your list is saved in this browser automatically.</p>
+    </header>
+
+    <!--
+      A <form> wraps the input and button so pressing Enter submits too.
+      The <label> names the input for screen readers — clicking it also
+      focuses the input.
+    -->
+    <form class="add-form" id="add-form">
+      <label for="task-input" class="sr-only" style="position:absolute; left:-9999px;">Task title</label>
+      <input
+        type="text"
+        id="task-input"
+        placeholder="What needs to be done?"
+        autocomplete="off"
+      />
+      <button type="submit">Add task</button>
+    </form>
+
+    <!-- JavaScript fills this <ul> with <li> elements -->
+    <ul class="task-list" id="task-list"></ul>
+
+    <p class="status-bar" id="status-bar" role="status" aria-live="polite"></p>
+  </main>
+
+  <script>
+    /* ============================================================
+       THE THREE LAYERS OF THIS APP
+       1. STATE     — a JavaScript array of task objects (the source of truth)
+       2. DOM       — what you see on screen (rendered FROM the state)
+       3. PERSISTED — the same array saved to localStorage
+       Every action updates the state, saves it, then re-renders the DOM.
+       ============================================================ */
+
+    // 1. STATE ----------------------------------------------------
+    // Each task: { id, title, done, priority: 'low' | 'normal' | 'high' }
+    let tasks = [];
+
+    // 2. DOM REFERENCES -------------------------------------------
+    const form = document.getElementById('add-form');
+    const input = document.getElementById('task-input');
+    const list = document.getElementById('task-list');
+    const statusBar = document.getElementById('status-bar');
+
+    // 3. PERSISTENCE ----------------------------------------------
+    const STORAGE_KEY = 'workTasks.v1';
+
+    function loadTasks() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        tasks = saved ? JSON.parse(saved) : [];
+      } catch {
+        tasks = [];   // corrupted storage? start clean instead of crashing
+      }
+    }
+
+    function saveTasks() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    // 4. RENDER — draw the DOM from the state ----------------------
+    // This is the ONLY place the visible list is built. After any
+    // state change we call render() again, so screen and state
+    // can never disagree.
+    function render() {
+      list.innerHTML = '';    // clear what's on screen
+
+      if (tasks.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'empty-state';
+        empty.textContent = 'No tasks yet. Add one above.';
+        list.appendChild(empty);
+        return;
+      }
+
+      tasks.forEach(task => {
+        const li = document.createElement('li');
+
+        // (a) checkbox — toggles done
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.done;
+        checkbox.id = 'task-' + task.id;
+        checkbox.addEventListener('change', () => toggleDone(task.id));
+
+        // (b) title
+        const title = document.createElement('label');
+        title.className = 'task-title' + (task.done ? ' done' : '');
+        title.htmlFor = 'task-' + task.id;   // clicking the title toggles too
+        title.textContent = task.title;
+
+        // (c) priority badge
+        const badge = document.createElement('span');
+        badge.className = 'badge' + (task.priority === 'high' ? ' badge-high' : task.priority === 'low' ? ' badge-low' : '');
+        badge.textContent = task.priority;
+
+        // (d) delete button
+        const del = document.createElement('button');
+        del.className = 'delete-btn';
+        del.type = 'button';
+        del.textContent = '×';
+        del.setAttribute('aria-label', 'Delete task: ' + task.title);
+        del.addEventListener('click', () => deleteTask(task.id));
+
+        li.append(checkbox, title, badge, del);
+        list.appendChild(li);
+      });
+
+      updateStatus();
+    }
+
+    // 5. ACTIONS — each one changes STATE, then saves + re-renders --
+    function addTask(title) {
+      tasks.push({
+        id: Date.now().toString(36),   // simple unique-enough id
+        title: title,
+        done: false,
+        priority: 'normal'
+      });
+      saveTasks();
+      render();
+    }
+
+    function toggleDone(id) {
+      const task = tasks.find(t => t.id === id);
+      if (task) task.done = !task.done;
+      saveTasks();
+      render();
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasks();
+      render();
+    }
+
+    function updateStatus() {
+      const doneCount = tasks.filter(t => t.done).length;
+      statusBar.textContent = tasks.length === 0
+        ? ''
+        : doneCount + ' of ' + tasks.length + ' tasks completed';
+    }
+
+    // 6. EVENT WIRING ---------------------------------------------
+    form.addEventListener('submit', event => {
+      event.preventDefault();            // stop the browser reloading the page
+      const title = input.value.trim();  // trim = ignore whitespace-only input
+      if (title === '') return;          // nothing to add
+      addTask(title);
+      form.reset();                      // clears the input
+      input.focus();                     // ready for the next task
+    });
+
+    // 7. STARTUP ---------------------------------------------------
+    loadTasks();
+    render();
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
