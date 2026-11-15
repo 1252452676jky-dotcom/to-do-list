@@ -31,3 +31,4 @@ M1 — Static work task panel → upgraded to a working to-do list (prototype co
 
 ## Next step
 Rebuild M1 from blank file: heading + description + labeled input + Add button (no JS). Then add the three example tasks as static HTML. Commit each step.
+test from work
