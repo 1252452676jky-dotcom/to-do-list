@@ -1,0 +1,20 @@
+li {
+    color: deepskyblue;
+}
+h1 {
+    color: crimson;
+}
+.description {
+    color: dimgrey;
+}
+body {
+    font-family: system-ui, sans-serif;
+    padding: 16px;
+}
+#task-title{
+    font-family: inherit;
+    color:rgb(141, 172, 108);
+}
+ul label{
+    color: rgb(84, 126, 31);
+}
