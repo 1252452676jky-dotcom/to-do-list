@@ -4,17 +4,22 @@ li {
 h1 {
     color: crimson;
 }
-.description {
+p.description {
     color: dimgrey;
 }
 body {
     font-family: system-ui, sans-serif;
     padding: 16px;
 }
-#task-title{
+#task-title, button{
     font-family: inherit;
+}
+#task-title{
     color:rgb(141, 172, 108);
 }
 ul label{
     color: rgb(84, 126, 31);
+}
+.description.highlight {
+    font-style: italic;
 }
