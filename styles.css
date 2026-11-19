@@ -1,0 +1,306 @@
+/* ==========================================================
+   styles.css — presentation only.
+   1. Design tokens   2. Base   3. Layout   4. Form
+   5. Task lists      6. Folds (<details>)   7. Accessibility
+   ========================================================== */
+
+/* 1. DESIGN TOKENS ----------------------------------------
+   Custom properties: define a value once, reuse it with var(). */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --text-muted: #4f5f78;          /* darkened for readable contrast on --bg */
+
+  --accent: #2f55d4;
+  --accent-hover: #24439f;
+  --accent-soft: #eef2ff;
+
+  --high: #b91c1c;
+  --high-soft: #fde8e8;
+  --low: #4f5f78;
+  --low-soft: #f1f5f9;
+  --soon: #b45309;
+  --soon-soft: #fef3c7;
+
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+/* 2. BASE -------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+h1, h2, p { margin: 0; }
+
+/* The hidden attribute must always win, even over display rules. */
+[hidden] { display: none !important; }
+
+/* 3. LAYOUT ------------------------------------------------ */
+.app {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.app-header { margin-bottom: 1.25rem; }
+
+.app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.description {
+  margin-top: 0.25rem;
+  color: var(--text-muted);
+}
+
+.summary {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.card h2 { font-size: 1rem; margin-bottom: 0.75rem; }
+
+.task-section { margin-bottom: 1.5rem; }
+
+.task-section h2,
+.fold > summary {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.task-section h2 { margin-bottom: 0.5rem; }
+
+.count {
+  display: inline-block;
+  min-width: 1.5rem;
+  margin-left: 0.25rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--text);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.empty {
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* 4. FORM -------------------------------------------------- */
+.add-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;     /* two equal columns */
+  gap: 0.75rem 1rem;
+}
+
+.field-wide { grid-column: 1 / -1; }  /* span both columns */
+
+.field { min-width: 0; }
+
+.field label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.optional { font-weight: 400; color: var(--text-muted); }
+
+.add-form input,
+.add-form select {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  font: inherit;                      /* inputs don't inherit fonts by default */
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid #94a3b8;
+  border-radius: var(--radius);
+}
+
+.form-error {
+  color: var(--high);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.btn-primary {
+  padding: 0.65rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-primary:hover { background: var(--accent-hover); }
+
+@media (min-width: 560px) {
+  .btn-primary { justify-self: end; }
+}
+
+/* 5. TASK LISTS -------------------------------------------- */
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* A task is a "card" with a colored left edge for its priority. */
+.task {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.task.priority-high { border-left-color: var(--high); }
+.task.priority-low  { border-left-color: var(--low); }
+
+.task input[type="checkbox"] {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0.15rem 0 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.task-body { flex: 1; min-width: 0; }   /* min-width:0 lets long text wrap */
+
+.task-title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.task-note {
+  margin-top: 0.125rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+/* Small pills: priority + due date. Text carries the meaning, so
+   color is never the only signal. */
+.badge,
+.due {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-high   { background: var(--high-soft);   color: var(--high); }
+.badge-normal { background: var(--accent-soft); color: var(--accent); }
+.badge-low    { background: var(--low-soft);    color: var(--low); }
+
+.due       { background: var(--low-soft);  color: var(--text-muted); }
+.due.soon  { background: var(--soon-soft); color: var(--soon); }
+.due.late  { background: var(--high-soft); color: var(--high); }
+
+.task.is-done .task-title {
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.delete-btn {
+  flex: none;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-btn:hover { color: var(--high); background: var(--high-soft); }
+
+/* 6. FOLDS (<details>) ------------------------------------- */
+.fold > summary {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0;
+  margin-bottom: 0.5rem;
+  list-style: none;                    /* hide default triangle (Firefox/Chrome) */
+  cursor: pointer;
+}
+
+.fold > summary::-webkit-details-marker { display: none; }  /* Safari */
+
+/* A triangle drawn with borders (a text arrow sits unevenly in some fonts). */
+.fold > summary::before {
+  content: "";
+  flex: none;
+  margin-right: 0.5rem;
+  border-left: 0.45rem solid currentColor;
+  border-top: 0.3rem solid transparent;
+  border-bottom: 0.3rem solid transparent;
+  transition: transform 0.15s ease;
+}
+
+.fold[open] > summary::before { transform: rotate(90deg); }
+
+/* 7. ACCESSIBILITY ----------------------------------------- */
+/* A thick ring for keyboard users; mouse clicks don't trigger it. */
+input:focus-visible,
+select:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
