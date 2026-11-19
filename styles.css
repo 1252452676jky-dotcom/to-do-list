@@ -1,25 +1,10 @@
-li {
-    color: deepskyblue;
-}
-h1 {
-    color: crimson;
-}
 p.description {
-    color: dimgrey;
+    color: #64748b;
 }
 body {
-    font-family: system-ui, sans-serif;
-    padding: 16px;
+    background-color: #f4f6f9;
+    color: #1e293b;
 }
 #task-title, button{
     font-family: inherit;
-}
-#task-title{
-    color:rgb(141, 172, 108);
-}
-ul label{
-    color: rgb(84, 126, 31);
-}
-.description.highlight {
-    font-style: italic;
 }
